@@ -44,6 +44,9 @@ func EnsureTempDB(log mysql.Logger, suffix string, dbCfg mysql.Config) (tempDBCf
 	dbCfg.DBName = fmt.Sprintf("%s_%s", prefix, reIdentUnsafe.ReplaceAllString(suffix, "_"))
 	sqlDropDB := fmt.Sprintf("DROP DATABASE %s", dbCfg.DBName)     // XXX No escaping.
 	sqlCreateDB := fmt.Sprintf("CREATE DATABASE %s", dbCfg.DBName) // XXX No escaping.
+	if dbCfg.Collation != "" {
+		sqlCreateDB = fmt.Sprintf("%s COLLATE %s", sqlCreateDB, dbCfg.Collation)
+	}
 	if _, err = db.Exec(sqlDropDB); err != nil {
 		if err2 := new(mysql.MySQLError); !(errors.As(err, &err2) && err2.Number == 1008) {
 			return nil, nil, fmt.Errorf("failed to drop temporary db: %w", err)
