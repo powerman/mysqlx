@@ -52,7 +52,7 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg
 		return nil, nil, err
 	}
 
-	cfg.DBName = fmt.Sprintf("%s_%s", prefix, reIdentUnsafe.ReplaceAllString(suffix, "_"))
+	cfg.DBName = dbName(prefix, reIdentUnsafe.ReplaceAllString(suffix, "_"))
 	sqlDropDB := fmt.Sprintf("DROP DATABASE %s", cfg.DBName)     // XXX No escaping.
 	sqlCreateDB := fmt.Sprintf("CREATE DATABASE %s", cfg.DBName) // XXX No escaping.
 	if cfg.Collation != "" {
@@ -74,4 +74,17 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg
 		closeDB()
 	}
 	return cfg, cleanup, nil
+}
+
+func dbName(prefix, suffix string) string {
+	const maxDBNameLen = 63 // https://dev.mysql.com/doc/refman/5.7/en/identifier-length.html
+	if len(prefix) > maxDBNameLen/2 {
+		prefix = prefix[:maxDBNameLen/2]
+	}
+	pos := len(prefix) + 1 + len(suffix) - maxDBNameLen
+	if pos < 0 {
+		pos = 0
+	}
+	suffix = suffix[pos:]
+	return fmt.Sprintf("%s_%s", prefix, suffix)
 }
