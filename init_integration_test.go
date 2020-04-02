@@ -23,7 +23,7 @@ func setupIntegration() {
 	}
 	dbCfg.Timeout = 3 * testSecond
 
-	dbCfg, cleanup, err := EnsureTempDB(logger, "", *dbCfg)
+	dbCfg, cleanup, err := EnsureTempDB(logger, "", dbCfg)
 	if err != nil {
 		testinit.Fatal(err)
 	}

@@ -22,13 +22,14 @@ var reIdentUnsafe = regexp.MustCompile(`[^0-9a-zA-Z$_]`) //nolint:gochecknogloba
 // cfg.DBName using "_" as separator.
 //
 // Default value for suffix is caller's package import path.
-func EnsureTempDB(log mysql.Logger, suffix string, cfg mysql.Config) (tempDBCfg *mysql.Config, cleanup func(), err error) {
+func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg *mysql.Config, cleanup func(), err error) {
 	if suffix == "" {
 		pc, _, _, _ := runtime.Caller(1)
 		suffix = runtime.FuncForPC(pc).Name()
 		suffix = suffix[:strings.LastIndex(suffix, ".")]
 	}
 
+	cfg = cfg.Clone()
 	prefix := cfg.DBName
 	cfg.DBName = ""
 	db, err := sql.Open("mysql", cfg.FormatDSN())
@@ -72,5 +73,5 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg mysql.Config) (tempDBCfg 
 		}
 		closeDB()
 	}
-	return &cfg, cleanup, nil
+	return cfg, cleanup, nil
 }
