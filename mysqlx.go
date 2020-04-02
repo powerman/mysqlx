@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"runtime"
+	"strings"
 
 	"github.com/go-sql-driver/mysql"
 )
@@ -16,12 +18,20 @@ var reIdentUnsafe = regexp.MustCompile(`[^0-9a-zA-Z$_]`) //nolint:gochecknogloba
 // and return config with temporary db name together with cleanup func
 // which will close and drop temporary db.
 //
-// Recommended value for suffix is your package's import path (it'll be
-// sanitized to contain only allowed symbols).
-func EnsureTempDB(log mysql.Logger, suffix string, dbCfg mysql.Config) (tempDBCfg *mysql.Config, cleanup func(), err error) {
-	prefix := dbCfg.DBName
-	dbCfg.DBName = ""
-	db, err := sql.Open("mysql", dbCfg.FormatDSN())
+// Suffix will be sanitized to contain only allowed symbols and joined with
+// cfg.DBName using "_" as separator.
+//
+// Default value for suffix is caller's package import path.
+func EnsureTempDB(log mysql.Logger, suffix string, cfg mysql.Config) (tempDBCfg *mysql.Config, cleanup func(), err error) {
+	if suffix == "" {
+		pc, _, _, _ := runtime.Caller(1)
+		suffix = runtime.FuncForPC(pc).Name()
+		suffix = suffix[:strings.LastIndex(suffix, ".")]
+	}
+
+	prefix := cfg.DBName
+	cfg.DBName = ""
+	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -41,11 +51,11 @@ func EnsureTempDB(log mysql.Logger, suffix string, dbCfg mysql.Config) (tempDBCf
 		return nil, nil, err
 	}
 
-	dbCfg.DBName = fmt.Sprintf("%s_%s", prefix, reIdentUnsafe.ReplaceAllString(suffix, "_"))
-	sqlDropDB := fmt.Sprintf("DROP DATABASE %s", dbCfg.DBName)     // XXX No escaping.
-	sqlCreateDB := fmt.Sprintf("CREATE DATABASE %s", dbCfg.DBName) // XXX No escaping.
-	if dbCfg.Collation != "" {
-		sqlCreateDB = fmt.Sprintf("%s COLLATE %s", sqlCreateDB, dbCfg.Collation)
+	cfg.DBName = fmt.Sprintf("%s_%s", prefix, reIdentUnsafe.ReplaceAllString(suffix, "_"))
+	sqlDropDB := fmt.Sprintf("DROP DATABASE %s", cfg.DBName)     // XXX No escaping.
+	sqlCreateDB := fmt.Sprintf("CREATE DATABASE %s", cfg.DBName) // XXX No escaping.
+	if cfg.Collation != "" {
+		sqlCreateDB = fmt.Sprintf("%s COLLATE %s", sqlCreateDB, cfg.Collation)
 	}
 	if _, err = db.Exec(sqlDropDB); err != nil {
 		if err2 := new(mysql.MySQLError); !(errors.As(err, &err2) && err2.Number == 1008) {
@@ -62,5 +72,5 @@ func EnsureTempDB(log mysql.Logger, suffix string, dbCfg mysql.Config) (tempDBCf
 		}
 		closeDB()
 	}
-	return &dbCfg, cleanup, nil
+	return &cfg, cleanup, nil
 }

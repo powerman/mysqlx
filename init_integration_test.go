@@ -10,8 +10,6 @@ import (
 	"github.com/powerman/gotest/testinit"
 )
 
-const testDBSuffix = "github.com/powerman/mysqlx"
-
 func init() { testinit.Setup(2, setupIntegration) }
 
 var dsn string
@@ -25,7 +23,7 @@ func setupIntegration() {
 	}
 	dbCfg.Timeout = 3 * testSecond
 
-	dbCfg, cleanup, err := EnsureTempDB(logger, testDBSuffix, *dbCfg)
+	dbCfg, cleanup, err := EnsureTempDB(logger, "", *dbCfg)
 	if err != nil {
 		testinit.Fatal(err)
 	}
