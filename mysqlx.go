@@ -53,8 +53,8 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg
 	}
 
 	cfg.DBName = dbName(prefix, reIdentUnsafe.ReplaceAllString(suffix, "_"))
-	sqlDropDB := fmt.Sprintf("DROP DATABASE %s", cfg.DBName)     // XXX No escaping.
-	sqlCreateDB := fmt.Sprintf("CREATE DATABASE %s", cfg.DBName) // XXX No escaping.
+	sqlDropDB := fmt.Sprintf("DROP DATABASE `%s`", cfg.DBName)     // XXX No escaping.
+	sqlCreateDB := fmt.Sprintf("CREATE DATABASE `%s`", cfg.DBName) // XXX No escaping.
 	if cfg.Collation != "" {
 		sqlCreateDB = fmt.Sprintf("%s COLLATE %s", sqlCreateDB, cfg.Collation)
 	}
