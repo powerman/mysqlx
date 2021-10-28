@@ -7,5 +7,5 @@ require (
 	github.com/powerman/check v1.4.0
 	github.com/powerman/getenv v0.1.0
 	github.com/powerman/gotest v0.3.0
-	github.com/smartystreets/goconvey v1.6.4
+	github.com/smartystreets/goconvey v1.7.2
 )
