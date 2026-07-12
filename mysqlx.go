@@ -2,6 +2,7 @@
 package mysqlx
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-var reIdentUnsafe = regexp.MustCompile(`[^0-9a-zA-Z$_]`) //nolint:gochecknoglobals // Regexp.
+var reIdentUnsafe = regexp.MustCompile(`[^0-9a-zA-Z$_]`)
 
 // EnsureTempDB will drop/create new temporary db with suffix in db name
 // and return config with temporary db name together with cleanup func
@@ -37,7 +38,8 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg
 		return nil, nil, err
 	}
 	closeDB := func() {
-		if err := db.Close(); err != nil {
+		err := db.Close()
+		if err != nil {
 			log.Print("failed to close db: ", err)
 		}
 	}
@@ -47,7 +49,7 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg
 		}
 	}()
 
-	err = db.Ping()
+	err = db.PingContext(context.Background())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -58,18 +60,22 @@ func EnsureTempDB(log mysql.Logger, suffix string, cfg *mysql.Config) (tempDBCfg
 	if cfg.Collation != "" {
 		sqlCreateDB = fmt.Sprintf("%s COLLATE %s", sqlCreateDB, cfg.Collation)
 	}
-	if _, err = db.Exec(sqlDropDB); err != nil {
-		if err2 := new(mysql.MySQLError); !(errors.As(err, &err2) && err2.Number == 1008) {
+	_, err = db.ExecContext(context.Background(), sqlDropDB)
+	if err != nil {
+		err2 := new(mysql.MySQLError)
+		if !errors.As(err, &err2) || err2.Number != 1008 {
 			return nil, nil, fmt.Errorf("failed to drop temporary db: %w", err)
 		}
 	}
-	if _, err := db.Exec(sqlCreateDB); err != nil {
+	_, err = db.ExecContext(context.Background(), sqlCreateDB)
+	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create temporary db: %w", err)
 	}
 
 	cleanup = func() {
-		if _, err := db.Exec(sqlDropDB); err != nil {
-			log.Print("failed to drop temporary db: ", err)
+		_, errCleanup := db.ExecContext(context.Background(), sqlDropDB)
+		if errCleanup != nil {
+			log.Print("failed to drop temporary db: ", errCleanup)
 		}
 		closeDB()
 	}
@@ -81,10 +87,7 @@ func dbName(prefix, suffix string) string {
 	if len(prefix) > maxDBNameLen/2 {
 		prefix = prefix[:maxDBNameLen/2]
 	}
-	pos := len(prefix) + 1 + len(suffix) - maxDBNameLen
-	if pos < 0 {
-		pos = 0
-	}
+	pos := max(len(prefix)+1+len(suffix)-maxDBNameLen, 0)
 	suffix = suffix[pos:]
 	return fmt.Sprintf("%s_%s", prefix, suffix)
 }

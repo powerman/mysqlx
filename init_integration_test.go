@@ -1,18 +1,25 @@
+//go:build integration
 // +build integration
 
-package mysqlx
+package mysqlx_test
 
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/powerman/getenv"
 	"github.com/powerman/gotest/testinit"
 )
 
 func init() { testinit.Setup(2, setupIntegration) }
 
-var dsn string
+var (
+	testTimeFactor = getenv.Float("GO_TEST_TIME_FACTOR", 1.0)
+	testSecond     = time.Duration(float64(time.Second) * testTimeFactor)
+	dsn            string
+)
 
 func setupIntegration() {
 	logger := log.New(os.Stderr, "", log.LstdFlags)

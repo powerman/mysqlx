@@ -1,6 +1,7 @@
+//go:build integration
 // +build integration
 
-package mysqlx
+package mysqlx_test
 
 import (
 	"database/sql"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestEnsureTempDB(tt *testing.T) {
-	t := check.T(tt)
+	t := check.Must(tt)
 	t.Contains(dsn, "_mysqlx?")
 	db, err := sql.Open("mysql", dsn)
 	t.Nil(err)
