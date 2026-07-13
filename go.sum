@@ -6,5 +6,5 @@ github.com/powerman/check v1.13.0 h1:/uNADrvWRzsRKCN00LEN/Ph0XMlUmtOhZTw2Qr60nNQ
 github.com/powerman/check v1.13.0/go.mod h1:h7WkuVUhfVN1yl/F6zm+zbZLeOUtx34+JpMA8aA2vR0=
 github.com/powerman/getenv v0.4.1 h1:7EM7X7zaJkI95NAx+Z69dtb1Az/2bIXmBnk4TyKizAg=
 github.com/powerman/getenv v0.4.1/go.mod h1:JF1+NCUdBVWI3YH22sTghA1bojWXW0geDAvEpe47pNg=
-github.com/powerman/gotest v0.4.0 h1:vPEEtCL4gm8ApKsOf4aF/eumLCt1O0S6EnWvae/nYgg=
-github.com/powerman/gotest v0.4.0/go.mod h1:OOziVsMIv7/oG77IwmbgJMdSolCPnRVzIinrnqNJpGk=
+github.com/powerman/gotest v0.4.1 h1:gkh6YX4CefkJuHx9wIR0nyRrvTRAXL2qUiyzl1QbtBw=
+github.com/powerman/gotest v0.4.1/go.mod h1:OOziVsMIv7/oG77IwmbgJMdSolCPnRVzIinrnqNJpGk=
