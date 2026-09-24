@@ -1,10 +1,10 @@
 module github.com/powerman/mysqlx
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/go-sql-driver/mysql v1.10.0
-	github.com/powerman/check v1.13.0
+	github.com/powerman/check v1.14.0
 	github.com/powerman/getenv v0.4.1
 	github.com/powerman/gotest v0.4.1
 )
