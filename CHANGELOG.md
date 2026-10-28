@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-10-28
+
+### 🔔 Changed
+
+- Require Go 1.26 by @powerman in [1141aa6]
+
+### 🐛 Fixed
+
+- Escape backticks in temporary database identifiers by @powerman in [4c7c2ae]
+
+### 📦️ Dependencies
+
+- **(deps)** Bump github.com/powerman/gotest from 0.4.0 to 0.4.1 by @dependabot[bot] in [#13]
+- **(deps)** Upgrade go and golangci-lint by @powerman in [d412514]
+- **(deps)** Upgrade go modules by @powerman in [cfeddef]
+- **(deps)** Upgrade go and golangci-lint by @powerman in [6ce351e]
+- **(deps)** Mise up by @powerman in [bf85828]
+
+[0.5.0]: https://github.com/powerman/mysqlx/compare/v0.4.0..v0.5.0
+[#13]: https://github.com/powerman/mysqlx/pull/13
+[d412514]: https://github.com/powerman/mysqlx/commit/d412514d72b921c7c3c2a9d19e8ac8ccb407bd85
+[cfeddef]: https://github.com/powerman/mysqlx/commit/cfeddef05a77532acfe6dcab2baf334548ccb772
+[4c7c2ae]: https://github.com/powerman/mysqlx/commit/4c7c2aef95b30011f084606f774c89272d6f0ae9
+[6ce351e]: https://github.com/powerman/mysqlx/commit/6ce351ea3301d23544def812cf267741dd3e49ce
+[1141aa6]: https://github.com/powerman/mysqlx/commit/1141aa6002e6c5e922369106c066f5b1add99874
+[bf85828]: https://github.com/powerman/mysqlx/commit/bf8582826ef8e49ba054528128dd605d192e844f
+
 ## [0.4.0] - 2026-07-12
 
 [0.4.0]: https://github.com/powerman/mysqlx/compare/v0.3.3..v0.4.0
